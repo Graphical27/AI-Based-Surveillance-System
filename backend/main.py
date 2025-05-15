@@ -10,7 +10,6 @@ app = FastAPI()
 model = YOLO("model_weights/best.pt", task="detect")
 thresh = 0.5
 
-
 def annotate_frame(frame):
     res = model(frame, verbose=False)[0].boxes
     counts = {}
