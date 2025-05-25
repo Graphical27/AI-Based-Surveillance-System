@@ -38,7 +38,6 @@ async def detect_image(file: UploadFile = File(...)):
 
 @app.post("/detect-video")
 async def detect_video(file: UploadFile = File(...)):
-    # save upload to temp file
     tmp = tempfile.NamedTemporaryFile(delete=False, suffix=os.path.splitext(file.filename)[1])
     tmp.write(await file.read())
     tmp.close()
@@ -66,5 +65,4 @@ async def detect_video(file: UploadFile = File(...)):
 
 @app.get("/detect-stream")
 async def detect_stream():
-    # placeholder for websocket or MJPEG stream
     return {"detail": "Use WebSocket or MJPEG endpoint for live camera"}
