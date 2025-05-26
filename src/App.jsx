@@ -14,11 +14,37 @@ const CLASS_STATS = {
 
 // Utility function to convert hex to base64
 const hexToBase64 = (hexstring) => {
-  const bytes = new Uint8Array(hexstring.length / 2)
-  for (let i = 0; i < hexstring.length; i += 2) {
-    bytes[i / 2] = parseInt(hexstring.substr(i, 2), 16)
+  try {
+    // Ensure we have a valid hex string
+    if (!hexstring || typeof hexstring !== 'string') {
+      console.error('Invalid hex string:', hexstring)
+      return null
+    }
+    
+    // Make sure the hex string has an even length
+    const paddedHex = hexstring.length % 2 ? '0' + hexstring : hexstring
+    
+    // Create a byte array from the hex string
+    const bytes = new Uint8Array(paddedHex.length / 2)
+    for (let i = 0; i < paddedHex.length; i += 2) {
+      bytes[i / 2] = parseInt(paddedHex.substr(i, 2), 16)
+    }
+    
+    // Convert to base64 in chunks to avoid "Maximum call stack size exceeded"
+    const CHUNK_SIZE = 8192  // Adjust based on your browser's limits
+    let binary = ''
+    const len = bytes.length
+    
+    for (let i = 0; i < len; i += CHUNK_SIZE) {
+      const chunk = bytes.subarray(i, Math.min(i + CHUNK_SIZE, len))
+      binary += String.fromCharCode.apply(null, chunk)
+    }
+    
+    return btoa(binary)
+  } catch (error) {
+    console.error('Error in hexToBase64:', error)
+    return null
   }
-  return btoa(String.fromCharCode.apply(null, bytes))
 }
 
 const computeSurvivalProbability = (invaders, defenders, homeAdvantage = 0.1) => {
@@ -215,17 +241,31 @@ export default function App() {
       }
       
       const data = await response.json()
+      console.log('API response data:', { 
+        hasCounts: !!data.counts, 
+        hasImage: !!data.image,
+        imageLength: data.image ? data.image.length : 0
+      })
       
       // Convert hex image to base64 if provided
       let processedImage = null
       if (data.image) {
-        const base64Image = hexToBase64(data.image)
-        processedImage = `data:image/jpeg;base64,${base64Image}`
+        console.log('Converting hex image to base64...')
+        try {
+          const base64Image = hexToBase64(data.image)
+          processedImage = `data:image/jpeg;base64,${base64Image}`
+          console.log('Successfully converted image to base64')
+        } catch (error) {
+          console.error('Error converting hex to base64:', error)
+        }
+      } else {
+        console.log('No image data in response')
       }
       
       return {
         counts: data.counts || {},
-        preview: processedImage
+        preview: processedImage,
+        image: data.image || null
       }
     } catch (error) {
       console.error('Error calling model:', error)
@@ -273,8 +313,17 @@ export default function App() {
       const { counts: newCounts, preview: newPreview } = await callModel(formData)
       
       console.log('Received new counts:', newCounts)
+      console.log('Received preview image:', newPreview ? 'Yes' : 'No')
       setCounts(newCounts || {})
-      setPreview(newPreview)
+      
+      if (newPreview) {
+        setPreview(newPreview)
+        console.log('Processed image set to preview')
+      } else {
+        console.log('No image data received from backend')
+        // Set error message if no preview is available
+        setError('No processed image received from server. Please try again.')
+      }
     } catch (error) {
       console.error('Error processing image:', error)
       setError('Failed to process image. Please check your connection and try again.')
@@ -310,8 +359,17 @@ export default function App() {
       const { counts: newCounts, preview: newPreview } = await callModel(formData)
       
       console.log('Received new counts from camera:', newCounts)
+      console.log('Received preview image from camera:', newPreview ? 'Yes' : 'No')
       setCounts(newCounts || {})
-      setPreview(newPreview)
+      
+      if (newPreview) {
+        setPreview(newPreview)
+        console.log('Processed image set to preview')
+      } else {
+        console.log('No image data received from backend')
+        // Set error message if no preview is available
+        setError('No processed image received from server. Please try again.')
+      }
     } catch (error) {
       console.error('Error capturing frame:', error)
       setError('Failed to process camera frame. Please try again.')
