@@ -112,7 +112,7 @@ const computeSurvivalProbability = (invaders, defenders, homeAdvantage = 0.1) =>
 export default function App() {
   const [mode, setMode] = useState('image')
   const [isSidebarOpen, setSidebarOpen] = useState(false)
-  const [isDarkMode, setDarkMode] = useState(false)
+  const [isDarkMode, setDarkMode] = useState(true) // Force dark mode on start
   const [preview, setPreview] = useState(null)
   const [originalImage, setOriginalImage] = useState(null)
   const [counts, setCounts] = useState({})
@@ -433,7 +433,7 @@ export default function App() {
             </div>
             <div>
               <h1 className="text-xl font-bold bg-gradient-to-r from-blue-500 to-purple-600 bg-clip-text text-transparent">
-                SecureVision
+                Secure
               </h1>
               <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>AI Security Monitor</p>
             </div>
@@ -490,7 +490,15 @@ export default function App() {
                 }`}
               >
                 <Settings size={22} />
-                <span>{isDarkMode ? 'Light Mode' : 'Dark Mode'}</span>
+                <span
+                  className={
+                    isDarkMode
+                      ? 'text-white'
+                      : 'text-gray-900'
+                  }
+                >
+                  {isDarkMode ? 'Light Mode' : 'Dark Mode'}
+                </span>
               </button>
             </li>
           </ul>
