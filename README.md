@@ -1,9 +1,5 @@
 # AI-Based Surveillance System 🔐🧠
 
-<img align="right" src="https://img.shields.io/github/stars/Graphical27/AI-Surveillance-System?style=flat-square">
-<img align="right" src="https://img.shields.io/github/forks/Graphical27/AI-Surveillance-System?style=flat-square">
-<img align="right" src="https://img.shields.io/github/watchers/Graphical27/AI-Surveillance-System?style=flat-square">
-
 <br>
 
 [![forthebadge](https://forthebadge.com/images/badges/made-with-python.svg)](https://forthebadge.com)  
