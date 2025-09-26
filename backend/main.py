@@ -15,7 +15,7 @@ model = YOLO("model_weights/best.pt", task="detect")
 thresh = 0.5
 
 # Initialize Pushbullet with your API key
-PUSHBULLET_API_KEY = "o.zpZQdcX1zsLLbaU6IkuqWPH2yH36cke6"
+PUSHBULLET_API_KEY = "API_HERE"
 pb = Pushbullet(PUSHBULLET_API_KEY)
 
 # Helper function to send notification
